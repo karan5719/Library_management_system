@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Available Books</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 2em;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #5a5a5a;
+            margin-bottom: 1.5em;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .back-btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin-top: 1.5em;
+            background-color: #6c757d;
+            color: white;
+            border-radius: 4px;
+        }
+        .back-btn:hover {
+             background-color: #5a6268;
+        }
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Available Books</h2>
+        <ul>
+            {% for book in books %}
+            <li>{{ book.title }} ({{ book.quantity }} available)</li>
+            {% endfor %}
+        </ul>
+        <div class="text-center">
+             <a href="{{ url_for('member_dashboard') }}" class="back-btn">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

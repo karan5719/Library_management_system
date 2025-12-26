@@ -1,0 +1,26 @@
+services:
+  # Web Service
+  - type: web
+    name: library-management-system
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      # External MySQL connection - replace with your values
+      - key: DB_HOST
+        value: your-mysql-host.com
+      - key: DB_USER
+        value: your_mysql_user
+      - key: DB_PASSWORD
+        value: your_mysql_password
+      - key: DB_NAME
+        value: librarys_management_system
+      - key: DB_PORT
+        value: 3306

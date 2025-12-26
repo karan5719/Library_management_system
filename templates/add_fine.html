@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Fine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Add Fine</h1>
+    <form method="POST">
+        <label for="member_id">Select Member:</label>
+        <select name="member_id" required>
+            {% for member in members %}
+                <option value="{{ member[0] }}">{{ member[1] }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" required><br><br>
+
+        <label for="reason">Reason:</label>
+        <input type="text" name="reason" required><br><br>
+
+        <label for="date_assessed">Date Assessed:</label>
+        <input type="date" name="date_assessed" required><br><br>
+
+        <input type="submit" value="Add Fine">
+    </form>
+    <a href="{{ url_for('manage_fines') }}">
+        <button type="button">Back</button>
+    </a>
+</body>
+</html>

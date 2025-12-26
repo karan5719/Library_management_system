@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Book</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+        function toggleNewField(selectElement, newFieldId) {
+            const newField = document.getElementById(newFieldId);
+            if (selectElement.value === 'new') {
+                newField.style.display = 'block';
+                newField.querySelector('input').setAttribute('required', 'required');
+            } else {
+                newField.style.display = 'none';
+                newField.querySelector('input').removeAttribute('required');
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Add New Book</h2>
+        {% if error %}
+            <div class="form-error">{{ error }}</div>
+        {% endif %}
+        <form method="POST">
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="author_id">Author:</label>
+                <select name="author_id" onchange="toggleNewField(this, 'new-author-field')" required>
+                    <option value="" disabled selected>Select an existing author</option>
+                    {% for author in authors %}
+                        <option value="{{ author.id }}">{{ author.name }}</option>
+                    {% endfor %}
+                    <option value="new">-- Add New Author --</option>
+                </select>
+            </div>
+            <div class="form-group" id="new-author-field" style="display:none;">
+                <label for="new_author_name">New Author Name:</label>
+                <input type="text" name="new_author_name" placeholder="Enter new author's name">
+            </div>
+
+            <div class="form-group">
+                <label for="publisher_id">Publisher:</label>
+                <select name="publisher_id" onchange="toggleNewField(this, 'new-publisher-field')" required>
+                    <option value="" disabled selected>Select an existing publisher</option>
+                    {% for publisher in publishers %}
+                        <option value="{{ publisher.id }}">{{ publisher.name }}</option>
+                    {% endfor %}
+                    <option value="new">-- Add New Publisher --</option>
+                </select>
+            </div>
+            <div class="form-group" id="new-publisher-field" style="display:none;">
+                <label for="new_publisher_name">New Publisher Name:</label>
+                <input type="text" name="new_publisher_name" placeholder="Enter new publisher's name">
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" name="quantity" required min="1">
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn">Add Book</button>
+            </div>
+        </form>
+        <div class="text-center">
+            <a href="{{ url_for('manage_books') }}" class="back-btn">Back to Manage Books</a>
+        </div>
+    </div>
+</body>
+</html>

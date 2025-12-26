@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-ag">
+    <title>Reserve Book</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 2em;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #5a5a5a;
+            margin-bottom: 1.5em;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        select {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            margin-bottom: 1.5em;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        button {
+            padding: 10px 25px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .back-btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin-top: 1.5em;
+            background-color: #6c757d;
+            color: white;
+            border-radius: 4px;
+        }
+        .back-btn:hover {
+             background-color: #5a6268;
+        }
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Reserve a Book</h2>
+        <form method="POST">
+            <label for="book_id">Select a book:</label>
+            <select name="book_id" required>
+                {% for book in books %}
+                <option value="{{ book.id }}">{{ book.title }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Reserve</button>
+        </form>
+        <div class="text-center">
+            <a href="{{ url_for('member_dashboard') }}" class="back-btn">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

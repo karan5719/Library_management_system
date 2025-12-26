@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Reservations</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 2em;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #5a5a5a;
+            margin-bottom: 1.5em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5em;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .back-btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            border-radius: 4px;
+        }
+        .back-btn:hover {
+             background-color: #5a6268;
+        }
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>All Reservations</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Reservation ID</th>
+                    <th>Book ID</th>
+                    <th>Member ID</th>
+                    <th>Reservation Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in reservations %}
+                <tr>
+                    <td>{{ res.id }}</td>
+                    <td>{{ res.book_title }}</td>
+                    <td>{{ res.member_username }}</td>
+                    <td>{{ res.reservation_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-center">
+            <a href="{{ url_for('admin_dashboard') }}" class="back-btn">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

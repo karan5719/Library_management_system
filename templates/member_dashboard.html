@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Member Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('view_books') }}">View Books</a></li>
+            <li><a href="{{ url_for('reserve_book') }}">Reserve a Book</a></li>
+            <li><a href="{{ url_for('my_fines') }}">My Fines</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="header-hero">
+            <div>
+                <div class="welcome">Welcome, <strong>{{ session['username'] }}</strong>!</div>
+                <div class="note">Here’s a quick summary of your library activity.</div>
+            </div>
+            <div>
+                <a href="{{ url_for('logout') }}" class="link">Logout</a>
+            </div>
+        </div>
+        <div class="cards">
+            <div class="card">
+                <h3>Available Books</h3>
+                <div class="value">{{ books_count }}</div>
+            </div>
+            <div class="card">
+                <h3>My Reservations</h3>
+                <div class="value">{{ reservations_count }}</div>
+            </div>
+            <div class="card">
+                <h3>My Fines</h3>
+                <div class="value">{{ fines_count }}</div>
+            </div>
+        </div>
+        <div class="quick-links">
+            <a href="{{ url_for('view_books') }}">View Books</a>
+            <a href="{{ url_for('reserve_book') }}">Reserve a Book</a>
+            <a href="{{ url_for('my_fines') }}">My Fines</a>
+        </div>
+    </div>
+
+</body>
+</html>
