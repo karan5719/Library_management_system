@@ -14,10 +14,10 @@ class Config:
     
     # Database configuration (matching .env)
     DB_HOST = os.environ.get('DB_HOST', 'localhost')
-    DB_USER = os.environ.get('DB_USER', 'root')
-    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'Teju@5719')
+    DB_USER = os.environ.get('DB_USER', 'postgres')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
     DB_NAME = os.environ.get('DB_NAME', 'librarys_management_system')
-    DB_PORT = int(os.environ.get('DB_PORT', 3306))
+    DB_PORT = int(os.environ.get('DB_PORT', 5432))
     
     # Session configuration
     SESSION_TYPE = 'filesystem'

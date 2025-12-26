@@ -1,6 +1,7 @@
 # app.py
 from flask import Flask, render_template, request, redirect, session, url_for, g
-import mysql.connector
+import psycopg2
+import psycopg2.extras
 import logging
 import os
 from dotenv import load_dotenv
@@ -27,15 +28,15 @@ def get_db():
         try:
             if not Config.DB_PASSWORD:
                 raise RuntimeError("DB_PASSWORD not configured in config.py or environment.")
-            g.db = mysql.connector.connect(
+            g.db = psycopg2.connect(
                 host=Config.DB_HOST,
                 user=Config.DB_USER,
                 password=Config.DB_PASSWORD,
                 database=Config.DB_NAME,
-                autocommit=False
+                port=Config.DB_PORT
             )
             logger.debug("Database connection established.")
-        except mysql.connector.Error as err:
+        except psycopg2.Error as err:
             logger.exception("Database connection failed.")
             raise RuntimeError(f"Database connection failed: {err}")
     return g.db
@@ -43,7 +44,7 @@ def get_db():
 @app.teardown_appcontext
 def close_db(e=None):
     db = g.pop('db', None)
-    if db is not None and getattr(db, "is_connected", lambda: True)():
+    if db is not None:
         try:
             db.close()
             logger.debug("Database connection closed.")
@@ -83,7 +84,7 @@ def login():
         db = get_db()
         try:
             # Use dictionary cursor for select to keep key access consistent
-            cursor = db.cursor(dictionary=True)
+            cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             cursor.execute(f"SELECT * FROM {table} WHERE username=%s", (username,))
             user = cursor.fetchone()
             cursor.close()
@@ -153,7 +154,7 @@ def _get_dashboard_stats(role, username=None):
     stats = {'books_count': 0, 'reservations_count': 0, 'fines_count': 0, 'members_count': 0}
     db = get_db()
     try:
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute("SELECT COUNT(*) AS count FROM Book")
         stats['books_count'] = cursor.fetchone()['count'] or 0
 
@@ -218,7 +219,7 @@ def add_book():
 
     db = get_db()
     # Use dictionary cursor for read operations
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT id, name FROM Author")
     authors = cursor.fetchall()
     cursor.execute("SELECT id, name FROM Publisher")
@@ -280,7 +281,7 @@ def manage_books():
     if not is_admin_or_employee():
         return redirect(url_for('login'))
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""SELECT Book.id, Book.title, Author.name AS author, Publisher.name AS publisher, Book.quantity 
                       FROM Book
                       LEFT JOIN Author ON Book.author_id = Author.id 
@@ -295,7 +296,7 @@ def edit_book(book_id):
         return redirect(url_for('login'))
 
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT id, name FROM Author")
     authors = cursor.fetchall()
     cursor.execute("SELECT id, name FROM Publisher")
@@ -356,7 +357,7 @@ def issue_book():
         return redirect(url_for('login'))
 
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT id, title FROM Book WHERE quantity > 0")
     books = cursor.fetchall()
     cursor.execute("SELECT id, username FROM Member")
@@ -400,7 +401,7 @@ def view_issued_books():
         return redirect(url_for('login'))
 
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
         SELECT ib.id, b.title AS book_title, m.username AS member_name,
                ib.issue_date, ib.return_date, ib.returned, ib.book_id
@@ -421,7 +422,7 @@ def return_book(issue_id):
 
     db = get_db()
     try:
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute("SELECT book_id FROM Issued_Books WHERE id=%s AND returned=FALSE", (issue_id,))
         rec = cursor.fetchone()
         cursor.close()
@@ -478,7 +479,7 @@ def view_members():
         return redirect(url_for('login'))
     db = get_db()
     try:
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute("SELECT id, username, email FROM Member")
         members = cursor.fetchall()
         cursor.close()
@@ -506,7 +507,7 @@ def view_authors():
     if not is_admin_or_employee():
         return redirect(url_for('login'))
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT id, name FROM Author")
     authors = cursor.fetchall()
     cursor.close()
@@ -531,7 +532,7 @@ def view_publishers():
     if not is_admin_or_employee():
         return redirect(url_for('login'))
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT id, name FROM Publisher")
     publishers = cursor.fetchall()
     cursor.close()
@@ -559,7 +560,7 @@ def view_reservations():
     if not is_admin_or_employee():
         return redirect(url_for('login'))
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
         SELECT r.id, b.title AS book_title, m.username AS member_username, r.reservation_date
         FROM Reservation AS r
@@ -575,7 +576,7 @@ def manage_vendors():
     if not is_admin_or_employee():
         return redirect(url_for('login'))
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT id, name, contact FROM Vendor")
     vendors = cursor.fetchall()
     cursor.close()
@@ -612,7 +613,7 @@ def manage_fines():
     if not is_admin_or_employee():
         return redirect(url_for('login'))
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
         SELECT Fine.id, Member.username, Fine.amount, Fine.reason, Fine.date_assessed
         FROM Fine
@@ -627,7 +628,7 @@ def add_fine():
     if not is_admin_or_employee():
         return redirect(url_for('login'))
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT id, username FROM Member")
     members = cursor.fetchall()
     cursor.close()
@@ -666,7 +667,7 @@ def view_books():
     if session.get('role') != 'member':
         return redirect(url_for('login'))
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
         SELECT Book.id, Book.title, Author.name AS author, Publisher.name AS publisher, Book.quantity 
         FROM Book
@@ -685,7 +686,7 @@ def reserve_book():
     db = get_db()
     username = session.get('username')
 
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT id FROM Member WHERE username=%s", (username,))
     member = cursor.fetchone()
     member_id = member['id'] if member else None
@@ -712,7 +713,7 @@ def reserve_book():
             logger.exception("Reservation failed")
             return f"Reservation failed: {str(e)}", 500
 
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
         SELECT Book.id, Book.title, Author.name AS author, Book.quantity 
         FROM Book 
@@ -730,7 +731,7 @@ def my_fines():
     db = get_db()
     username = session.get('username')
 
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT id FROM Member WHERE username=%s", (username,))
     member = cursor.fetchone()
     if member:
