@@ -3,10 +3,7 @@ from flask import Flask, render_template, request, redirect, session, url_for, g
 import mysql.connector
 import logging
 import os
-from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
-
-load_dotenv()
 
 try:
     from config import Config
