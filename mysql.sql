@@ -1,6 +1,5 @@
--- Drop the database if it exists to start fresh, and then create it.
-CREATE DATABASE librarys_management_system;
-USE librarys_management_system;
+-- Railway MySQL schema for library management system
+-- Note: Database will be created automatically by Railway
 
 -- Table Creation
 -- These tables are created first as other tables depend on them.
