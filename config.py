@@ -1,15 +1,14 @@
 import os
-
 class Config:
     # Secret key for session management and CSRF protection (must match .env)
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-key-change-this-in-production')
     
-    # Database configuration (matching Railway MySQL)
-    DB_HOST = os.environ.get('DB_HOST', 'nozomi.proxy.rlwy.net')
-    DB_USER = os.environ.get('DB_USER', 'root')
-    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'wUiUFYWLRpyFsdLuLhsbQqCzFHPmlIMw')
-    DB_NAME = os.environ.get('DB_NAME', 'librarys_management_system')
-    DB_PORT = int(os.environ.get('DB_PORT', 29951))
+    # Database configuration (Railway MySQL)
+    DB_HOST = os.environ.get('MYSQL_HOST', 'nozomi.proxy.rlwy.net')
+    DB_USER = os.environ.get('MYSQL_USER', 'root')
+    DB_PASSWORD = os.environ.get('MYSQL_PASSWORD', 'wUiUFYWLRpyFsdLuLhsbQqCzFHPmlIMw')
+    DB_NAME = os.environ.get('MYSQL_DATABASE', 'librarys_management_system')
+    DB_PORT = int(os.environ.get('MYSQL_PORT', 29951))
     
     # Session configuration
     SESSION_TYPE = 'filesystem'
@@ -52,7 +51,6 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     WTF_CSRF_ENABLED = False
-
 # Production configuration
 class ProductionConfig(Config):
     DEBUG = False
