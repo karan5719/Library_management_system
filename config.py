@@ -1,12 +1,4 @@
 import os
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
-
-# Check if running on Render
-if os.environ.get('RENDER'):
-    load_dotenv('.env.production')
 
 class Config:
     # Secret key for session management and CSRF protection (must match .env)
@@ -60,7 +52,6 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     WTF_CSRF_ENABLED = False
-    DB_NAME = 'test_library_db'
 
 # Production configuration
 class ProductionConfig(Config):
